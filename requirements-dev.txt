@@ -1,0 +1,37 @@
+# Training / experimentation dependencies.
+# Install on top of the runtime set:
+#     pip install -r requirements.txt -r requirements-dev.txt
+#
+# The Docker image deliberately does NOT install these - they are only needed to
+# retrain the model, run the notebooks, or tune hyperparameters.
+
+-r requirements.txt
+
+# --- experiment tracking (training only) ---
+# Serving does not import mlflow; it loads the pickle from the run directory
+# directly. mlflow 2.14 still imports pkg_resources, hence the setuptools pin.
+mlflow==2.14.1
+pyarrow==15.0.2
+setuptools<81
+
+# --- data quality gate (scripts/run_pipeline.py) ---
+# 1.x API. The 0.x `great_expectations.dataset.PandasDataset` helper this project
+# once used no longer exists in this line.
+great_expectations==1.5.8
+
+# --- hyperparameter tuning (scripts/test_pipeline_phase2_modeling.py) ---
+optuna==4.4.0
+
+# --- notebooks / EDA ---
+jupyter_client==8.6.3
+jupyter_core==5.8.1
+ipykernel==6.30.1
+ipython==9.4.0
+matplotlib==3.10.5
+seaborn==0.13.2
+statsmodels==0.14.5
+
+# --- tests ---
+pytest==8.3.2
+requests==2.32.4
+httpx==0.27.2

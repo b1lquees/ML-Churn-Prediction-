@@ -1,0 +1,33 @@
+# Render Blueprint - https://render.com/docs/blueprint-spec
+#
+# Deploys this repo as a Docker web service on Render's free instance type.
+# In the Render dashboard: New > Blueprint, point it at this repo, and it reads
+# this file. Everything below can also be set by hand via New > Web Service.
+#
+# Free instance notes:
+#   - Spins down after ~15 minutes of inactivity; the next request wakes it and
+#     takes roughly a minute. The model loads lazily on first prediction, so the
+#     health check answers as soon as the process is up.
+#   - 750 instance hours per month across the workspace.
+services:
+  - type: web
+    name: telco-churn-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+
+    # Render probes this to decide the deploy succeeded. It must be a path that
+    # does NOT need the model - /health answers before the model is loaded.
+    healthCheckPath: /health
+
+    # Render injects PORT and expects the app to listen on it; the Dockerfile's
+    # CMD reads ${PORT:-8000}. Pinning it here keeps it aligned with EXPOSE.
+    envVars:
+      - key: PORT
+        value: 8000
+      # Serving resolves the model from this path first (baked in at build time).
+      - key: MODEL_DIR
+        value: /app/model
+
+    autoDeploy: true

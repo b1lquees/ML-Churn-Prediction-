@@ -1,0 +1,33 @@
+# Data and notebooks are training-time only
+data/
+notebooks/
+
+# Experiment tracking output - the serving model is copied in explicitly
+mlruns/
+artifacts/
+
+# VCS / tooling
+.git/
+.github/
+.gitignore
+.dockerignore
+
+# Local envs and caches
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Gradio local flag output
+.gradio/
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Docs / dev-only requirements
+*.md
+requirements-dev.txt

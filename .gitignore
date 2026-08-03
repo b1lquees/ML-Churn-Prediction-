@@ -1,0 +1,57 @@
+# venvs
+.venv/
+venv/
+env/
+ENV/
+
+# OS cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+
+# Secrets - never commit these
+.env
+*.pem
+credentials.json
+
+# Gradio writes flagged submissions here at runtime
+.gradio/
+flagged/
+
+# Local tooling
+.claude/
+
+# Big artifacts we don't want in git.
+# The folders themselves are kept (via .gitkeep) so the paths the scripts write
+# to already exist on a fresh clone.
+mlruns/
+artifacts/
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# ...except the source dataset itself (~1 MB), which IS committed so the repo is
+# reproducible: clone and run the pipeline, no Kaggle download needed.
+# Everything under data/processed/ stays ignored - it is derived output that the
+# pipeline regenerates, and stale copies hide train/serve skew.
+!data/raw/Telco-Customer-Churn.csv
+
+# BUT keep our bundled serving model in the repo.
+# (These paths are not matched by the rules above; the negations are here to
+# make the intent explicit and to survive edits to the patterns above.)
+!src/serving/model/
+!src/serving/model/**

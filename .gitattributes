@@ -1,0 +1,15 @@
+# Normalize line endings so Windows checkouts don't produce CRLF-only diffs
+* text=auto eol=lf
+
+# Shell scripts must stay LF even on Windows (they run inside Linux containers)
+*.sh text eol=lf
+Dockerfile text eol=lf
+
+# Binary artifacts - never diff or convert these
+*.pkl binary
+*.png binary
+*.jpg binary
+*.csv text eol=lf
+
+# Collapse notebook diffs in PR view
+*.ipynb linguist-documentation
