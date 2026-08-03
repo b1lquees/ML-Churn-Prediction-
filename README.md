@@ -9,7 +9,12 @@ pinned: false
 
 # Telco Churn – End-to-End ML Project
 
-Predicting telecom customer churn, from data prep and modeling through to a REST API + web UI, deployed as a container on Render.
+Predicting telecom customer churn, from data prep and modeling through to a REST API + web UI, containerized and deployable to Render in one step.
+
+<!-- Once the Render service is live, put its URL here:
+**Live demo:** https://<your-service>.onrender.com  (first request after idle takes ~1 min to wake)
+-->
+
 
 ## Purpose
 
@@ -31,11 +36,12 @@ Python **3.11** is recommended (the bundled model was pickled under 3.11).
 ```bash
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
-pip install -r requirements.txt -r requirements-dev.txt
+pip install -r requirements-dev.txt
 ```
 
 `requirements.txt` is the serving runtime (what the Docker image installs).
-`requirements-dev.txt` adds the training, notebook and test tooling.
+`requirements-dev.txt` pulls that in via `-r` and adds the training, notebook and
+test tooling, so the one command above gets you everything.
 
 ### 2. Run the app
 
@@ -134,9 +140,11 @@ scripts/             # pipeline entry points and manual test scripts
 src/data/            # loading + preprocessing
 src/features/        # feature engineering (training side)
 src/serving/         # inference (serving side) + bundled MLflow model
-src/utils/           # data validation, logging helpers
+src/utils/           # data validation + console encoding helper
 src/app/main.py      # FastAPI + Gradio application
 tests/               # pytest suite
+Dockerfile           # serving image
+render.yaml          # Render Blueprint (deployment config)
 ```
 
 ## Deploying to Render (free)
@@ -226,5 +234,5 @@ registry credentials are needed — Render builds the image itself from the repo
 
 **Local testing vs. prod paths**
 
-- Cause: MLflow artifact URIs differ locally vs. in container.
-- Fixes: Serving resolves the model through an ordered candidate list (`MODEL_DIR` → `/app/model` → bundled model → newest local run), so the same code works in both places.
+- Cause: the model path was hardcoded to the container's `/app/model`, so nothing loaded outside Docker, and the app crashed on import when it was missing.
+- Fixes: serving resolves the model through an ordered candidate list (`MODEL_DIR` → `/app/model` → bundled model → newest local run) and loads it lazily, so the same code works in both places and a missing model no longer stops the health check from answering.
