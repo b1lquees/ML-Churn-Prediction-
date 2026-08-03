@@ -1,27 +1,7 @@
----
-title: Telco Customer Churn Predictor
-colorFrom: blue
-colorTo: indigo
-sdk: docker
-app_port: 8000
-pinned: false
----
-
 # Telco Churn – End-to-End ML Project
-
 Predicting telecom customer churn, from data prep and modeling through to a REST API + web UI, containerized and deployable to Render in one step.
 
-<!-- Once the Render service is live, put its URL here:
-**Live demo:** https://<your-service>.onrender.com  (first request after idle takes ~1 min to wake)
--->
-
-
-## Purpose
-
-Build and ship a full machine-learning solution for predicting customer churn in a telecom setting—from data prep and modeling to a deployed API + web UI.
-
 ## Problem solved & benefits
-
 - **Faster decisions:** Predicts which customers are likely to churn so teams can act before they leave.
 - **Operationalized ML:** Model is accessible via a REST API and a simple UI; anyone can test it without notebooks.
 - **Repeatable delivery:** CI/CD + containers mean every change can be rebuilt, tested, and redeployed in a consistent way.
@@ -35,7 +15,7 @@ Python **3.11** is recommended (the bundled model was pickled under 3.11).
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
+Windows: .venv\Scripts\activate
 pip install -r requirements-dev.txt
 ```
 
@@ -147,20 +127,7 @@ Dockerfile           # serving image
 render.yaml          # Render Blueprint (deployment config)
 ```
 
-## Deploying to Render (free)
-
-The app ships as a container, so what runs locally is what gets served.
-`render.yaml` is a Blueprint describing the whole service.
-
-**1. Push this repo to GitHub** (see below).
-
-**2. Create the service.** In the [Render dashboard](https://dashboard.render.com):
-**New → Blueprint**, connect the repo, and Render reads `render.yaml`. Or do it
-by hand with **New → Web Service**: pick the repo, runtime **Docker**, instance
-type **Free**, health check path `/health`.
-
-**3. Wait for the build**, then open the URL Render assigns:
-
+## Render
 | Path | What |
 |---|---|
 | `/` | redirects to the UI |
@@ -172,7 +139,7 @@ type **Free**, health check path `/health`.
 ### Notes
 
 - **The free instance sleeps** after ~15 minutes idle and takes about a minute to
-  wake. That is the tier, not a bug. Free workspaces get 750 instance hours/month.
+  wake. 
 - **`PORT` is injected by Render**; the container's `CMD` reads `${PORT:-8000}`,
   so the same image runs unchanged locally and on Render.
 - **`/health` is the health check path on purpose** — it responds before the
@@ -204,35 +171,3 @@ machine stays awake. Useful for a quick show-and-tell, not for deployment.
 GitHub Actions runs the test suite, builds the Docker image, boots the container
 and smoke-tests `/health` and `/predict` on every push and pull request. No
 registry credentials are needed — Render builds the image itself from the repo.
-
-## Roadblocks & how we solved them
-
-**Serving returned the same prediction for every customer**
-
-- Cause: the serving transform called `pd.get_dummies(..., drop_first=True)` on a single-row request. With one row there is only one category present per column, so `drop_first` deleted the only dummy it created and every one-hot feature reached the model as `0`.
-- Fix: serving one-hot encodes *without* `drop_first` and reproduces training's dropped baseline through the reindex against the saved feature schema. Covered by `tests/test_train_serve_parity.py`.
-
-**A stale dependency broke every fresh install**
-
-- Cause: `gradio` was unpinned, and `huggingface_hub` 1.0 removed `HfFolder`, which gradio 4.x imports. A clean `pip install` failed at import time.
-- Fix: both are pinned, and pinned together — bumping one alone reintroduces the break.
-
-**Module import error in container (`ModuleNotFoundError: serving`)**
-
-- Cause: Python path in the image didn't include `src/`.
-- Fixes: Set `PYTHONPATH=/app/src` in the Dockerfile; corrected uvicorn app path to `src.app.main:app`.
-
-**Training pipeline crashed before it ever trained**
-
-- Cause: the validation step used `great_expectations.dataset.PandasDataset`, the 0.x API, which no longer exists in the pinned 1.x release.
-- Fix: rewritten against the 1.x Data Context / Validation Definition API. It also validates a coerced copy, since raw `TotalCharges` is text with blank cells and the numeric checks otherwise failed on perfectly good data.
-
-**JSON front door on the deployed app**
-
-- Cause: `/` returned a health-check blob, so visitors landed on `{"status": "ok"}`.
-- Fix: `/` redirects to the Gradio UI; the health check moved to `/health`.
-
-**Local testing vs. prod paths**
-
-- Cause: the model path was hardcoded to the container's `/app/model`, so nothing loaded outside Docker, and the app crashed on import when it was missing.
-- Fixes: serving resolves the model through an ordered candidate list (`MODEL_DIR` → `/app/model` → bundled model → newest local run) and loads it lazily, so the same code works in both places and a missing model no longer stops the health check from answering.
