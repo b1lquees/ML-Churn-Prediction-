@@ -49,13 +49,9 @@ curl -X POST http://127.0.0.1:8000/predict -H "Content-Type: application/json" -
 ```bash
 pytest
 ```
-
-### 4. (Optional) Retrain
-
-The source dataset is committed at `data/raw/Telco-Customer-Churn.csv` (the IBM
 *Telco Customer Churn* sample, 7,043 customers — also on
 [Kaggle](https://www.kaggle.com/datasets/blastchar/telco-customer-churn)), so
-retraining needs no extra downloads:
+
 
 ```bash
 python scripts/run_pipeline.py
