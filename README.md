@@ -146,14 +146,6 @@ render.yaml          # Render Blueprint (deployment config)
   model is loaded, so a slow first load can't fail the deploy.
 - **The model is committed**, so there is no external storage or secret to set up.
 
-### Other hosts
-
-- **Hugging Face Spaces** requires a **paid PRO plan** for Gradio and Docker
-  Spaces; only Static Spaces are free, and those cannot run Python. The
-  `sdk: docker` / `app_port: 8000` front matter at the top of this file is left
-  in place so the repo works as a Space if you ever subscribe.
-- **Google Cloud Run** works with this same Dockerfile and has a generous
-  always-free allowance, but requires a card on the account.
 
 ### Quick temporary demo (no hosting)
 
