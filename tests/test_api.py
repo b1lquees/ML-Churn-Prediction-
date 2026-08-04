@@ -5,6 +5,8 @@ These exercise the same code path the container runs, so they catch model
 loading and feature alignment problems before deployment.
 """
 
+import re
+
 import pytest
 
 pytest.importorskip("fastapi")
@@ -98,3 +100,16 @@ def test_bad_numeric_type_returns_422():
 def test_gradio_ui_is_mounted():
     r = client.get("/ui/")
     assert r.status_code == 200
+
+
+def test_gradio_ui_serves_its_frontend_config():
+    """
+    The /ui page must carry the Gradio bootstrap config, not just return 200.
+
+    A bare status check passes even when the page is a shell that never boots,
+    so assert the config blob the frontend needs is actually embedded.
+    """
+    html = client.get("/ui/").text
+    assert "window.gradio_config" in html
+    match = re.search(r'"root"\s*:\s*"([^"]*)"', html)
+    assert match, "no root in the embedded Gradio config"
