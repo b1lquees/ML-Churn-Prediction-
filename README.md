@@ -32,6 +32,8 @@ after install — no training required.
 python -m uvicorn src.app.main:app --host 0.0.0.0 --port 8000
 ```
 
+Note: Incase the deployed link doesnt work , you can have a look at the pdf.
+
 - `GET  /` — redirects to the Gradio UI
 - `GET  /health` — health check → `{"status": "ok"}`
 - `POST /predict` — JSON in, churn prediction out
