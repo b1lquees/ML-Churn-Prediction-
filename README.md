@@ -154,8 +154,3 @@ python -c "from src.app.main import demo; demo.launch(share=True)"
 That prints a public URL that lasts about 72 hours and only works while your
 machine stays awake. Useful for a quick show-and-tell, not for deployment.
 
-### CI
-
-GitHub Actions runs the test suite, builds the Docker image, boots the container
-and smoke-tests `/health` and `/predict` on every push and pull request. No
-registry credentials are needed — Render builds the image itself from the repo.
