@@ -66,8 +66,8 @@ def main(args):
         df.to_csv(processed_path, index=False)
         print(f"Processed dataset saved to {processed_path} | Shape: {df.shape}")
 
-        #Feature Engineering - CRITICAL for Model Performance
-        print("Building features...")
+        #Feature Engineering 
+        print("Building features")
         target = args.target
         if target not in df.columns:
             raise ValueError(f"Target column '{target}' not found in data")
