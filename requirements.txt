@@ -18,12 +18,7 @@ starlette==0.38.6
 pydantic==2.8.2
 pydantic_core==2.20.1
 gradio==4.44.1
-# gradio 4.x imports HfFolder, which huggingface_hub removed in 1.0. Leaving
-# either package unpinned makes a fresh `pip install` fail at import time with
-# "cannot import name 'HfFolder'". Bump both together, never one alone.
-huggingface_hub>=0.25,<1.0
 
-# --- model loading + inference ---
 numpy==1.26.4
 pandas==2.1.4
 scikit-learn==1.5.2
