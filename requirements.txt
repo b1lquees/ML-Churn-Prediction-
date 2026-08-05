@@ -18,6 +18,18 @@ starlette==0.38.6
 pydantic==2.8.2
 pydantic_core==2.20.1
 
+# REQUIRED, not optional: src/app/main.py does `import gradio as gr` at module
+# import time and mounts the UI at /ui. Removing gradio here does not slim the
+# runtime, it makes the container die on startup with ModuleNotFoundError,
+# because the Docker image installs only this file.
+gradio==4.44.1
+# Pinned together with gradio, never separately. gradio 4.x imports HfFolder,
+# which huggingface_hub removed in 1.0, so an unpinned huggingface_hub resolves
+# to 1.x and every fresh install fails at `import gradio` with
+# "cannot import name 'HfFolder'".
+huggingface_hub>=0.25,<1.0
+
+# --- model loading + inference ---
 numpy==1.26.4
 pandas==2.1.4
 scikit-learn==1.5.2
