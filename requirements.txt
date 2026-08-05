@@ -17,7 +17,6 @@ uvicorn==0.30.5
 starlette==0.38.6
 pydantic==2.8.2
 pydantic_core==2.20.1
-gradio==4.44.1
 
 numpy==1.26.4
 pandas==2.1.4
